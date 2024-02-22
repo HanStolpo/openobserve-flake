@@ -1,0 +1,28 @@
+:100644 100644 e3ba7b1d 00000000 M	web/package.json
+
+diff --git a/web/package.json b/web/package.json
+index e3ba7b1d..d76966c9 100644
+--- a/package.json
++++ b/package.json
+@@ -69,8 +69,6 @@
+     "vuex": "^4.0.2"
+   },
+   "devDependencies": {
+-    "@cypress/vue": "^4.0.0",
+-    "@cypress/webpack-dev-server": "^2.0.0",
+     "@quasar/vite-plugin": "^1.0.10",
+     "@rushstack/eslint-patch": "^1.1.0",
+     "@types/d3-hierarchy": "^3.1.2",
+@@ -91,12 +89,9 @@
+     "@vue/test-utils": "^2.0.2",
+     "@vue/tsconfig": "^0.1.3",
+     "c8": "^7.11.3",
+-    "cypress": "^13.3.0",
+-    "cypress-localstorage-commands": "^2.2.1",
+     "dotenv": "^16.0.3",
+     "eslint": "^8.5.0",
+     "eslint-config-prettier": "^8.5.0",
+-    "eslint-plugin-cypress": "^2.12.1",
+     "eslint-plugin-vue": "^9.5.1",
+     "fs-extra": "^11.1.1",
+     "happy-dom": "^6.0.4",
