@@ -20,7 +20,7 @@
 
 
     openobserve-src = {
-      url = "github:openobserve/openobserve/v0.8.1";
+      url = "github:openobserve/openobserve/v0.12.1";
       flake = false;
     };
   };
@@ -37,10 +37,10 @@
 
           toolchain = (fenix.packages.${system}.fromToolchainName {
             name = (pkgs.lib.importTOML "${src}/rust-toolchain.toml").toolchain.channel;
-            sha256 = "sha256-nxFSckxGqs0YAW3UeHBC4fTeE3fLJI+nC0IEPiF/bIw=";
+            sha256 = "sha256-fA/nLspVp8bNs/kKMwfNswhRa5bMkPUmVL3HTm9K15w=";
           }).toolchain;
 
-          craneLib = crane.lib.${system}.overrideToolchain toolchain;
+          craneLib = (crane.mkLib nixpkgs.legacyPackages.${system}).overrideToolchain toolchain;
 
           src =
             # filter out the web directory which gets built and linked in later
@@ -55,11 +55,11 @@
           commonArgs = {
             inherit src;
 
-            patches = [
-              # the presence of .cargo/config.toml apparently
-              # breaks nix builds on aarch64-linux
-              ./nix/patches/remove-cargo-config-toml.patch
-            ];
+            # see https://github.com/rust-lang/rust/issues/125321
+            RUSTFLAGS="-Z linker-features=-lld";
+            prePatch = ''
+              rm .cargo/config.toml
+            '';
             strictDeps = true;
             nativeBuildInputs = [
               pkgs.protobuf
@@ -97,22 +97,23 @@
                 specifically for logs, metrics, traces, analytics, RUM (Real User Monitoring -
                 Performance, Errors, Session Replay) designed to work at petabyte scale.
               '';
-              license = licenses.agpl3;
+              license = licenses.agpl3Only;
               mainProgram = "openobserve";
             };
           });
 
-          web = pkgs.buildNpmPackage {
-            name = "${cargoToml.package.name}-web";
+          web = pkgs.buildNpmPackage rec {
+            pname = "${cargoToml.package.name}-web";
+            version = cargoToml.package.version;
             src = "${openobserve-src}/web";
 
-            patches = [
-              # remove cyprus related packages used for testing and which causes installation issues
-              ./nix/patches/web/package.json.diff
-            ];
+            prePatch = ''
+              sed -i '/cypress/d' package.json
+              #sed -i '/cypress/d' package-lock.json
+            '';
 
             # run prefetch-npm-deps to update it
-            npmDepsHash = "sha256-RNUCR80ewFt9F/VHv7kXLa87h0fz0YBp+9gSOUhtrdU=";
+            npmDepsHash = "sha256-UWWKLOi3nAjdCtRYyFmHNUxz0JTrtKUEIYGOYEM2i9w=";
 
             # the output of this package is only the assets
             # it is not a nodejs application
