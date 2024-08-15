@@ -42,7 +42,14 @@
 
           craneLib = crane.lib.${system}.overrideToolchain toolchain;
 
-          src = "${openobserve-src}";
+          src =
+            # filter out the web directory which gets built and linked in later
+            let f = name: type:
+              with builtins;
+              with pkgs.lib;
+              let baseName = baseNameOf (toString name);
+              in !(type == "directory" && baseName == "web");
+            in pkgs.lib.cleanSourceWith {filter = f; src = "${openobserve-src}";};
 
           # Common arguments can be set here to avoid repeating them later
           commonArgs = {
