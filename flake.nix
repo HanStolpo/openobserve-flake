@@ -54,6 +54,12 @@
           # Common arguments can be set here to avoid repeating them later
           commonArgs = {
             inherit src;
+
+            patches = [
+              # the presence of .cargo/config.toml apparently
+              # breaks nix builds on aarch64-linux
+              ./nix/patches/remove-cargo-config-toml.patch
+            ];
             strictDeps = true;
             nativeBuildInputs = [
               pkgs.protobuf
